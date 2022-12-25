@@ -24,20 +24,59 @@
 // const duck = document.querySelector('.duck');
 const gameArea = document.querySelector('.game-area');
 const score = 10;
+let bullet = 5;
 
-function createDuck(left, type) {
+function createDuck(left) {
   let duck = document.createElement('div');
+  let type = getRandomInt(0, 2);
+ 
+  if (type == 0) {
+    type = 'black';
+  } else {
+    type = 'red';
+  }
+
+  let timerDI = moveDuck(duck, type);
   duck.className = `duck ${type}-duck-left`;
   duck.style.left = left;
-  duck.style.top = '100%';
-
+  duck.style.top = getRandomInt(0, 100) + '%';
+duck.dataset.timer = timerDI;
   gameArea.appendChild(duck);
+ 
   moveDuck(duck, type);
 }
 
-createDuck(getRandomInt(0, 100) + '%', 'red');
-createDuck(getRandomInt(0, 100) + '%', 'black');
-createDuck(getRandomInt(0, 100) + '%', 'red');
+function start() {
+  let i = 0;
+  while (i < bullet) {
+    createDuck();
+    createBullet();
+    i += 1;
+  }
+}
+
+function createBullet() {
+  let bulletBlock = document.querySelector('.bullets-container');
+  let bullet = document.createElement('div');
+  bullet.className = 'bullet';
+
+  bulletBlock.appendChild(bullet);
+  
+}
+
+start();
+// createDuck(getRandomInt(0, 100) + '%', 'red');
+// createDuck(getRandomInt(0, 100) + '%', 'black');
+// createDuck(getRandomInt(0, 100) + '%', 'red');
+
+gameArea.onclick = function(e) {
+   
+  if (e.target.classList.contains('duck') == true) {
+    e.target.remove();
+  }
+}
+
+
 
 function moveDuck(duck, type) {
   let imageDuck = 0;
@@ -79,7 +118,9 @@ function moveDuck(duck, type) {
       default:
         move = moveTopRight(duck, type, imageDuck);
     }
-  }, 20);
+  }, 50);
+
+  return timerDI
 }
 
 function changeDirection(before) {
@@ -143,7 +184,7 @@ function moveRight(duck, type, imageDuck) {
   duck.style.backgroundImage = `url(assets/images/duck/${type}/right/${imageDuck}.png)`;
   duck.style.left = duck.offsetLeft + score + 'px';
 
-  if (duck.offsetLeft >= document.body.clientWidth - 20) {
+  if (duck.offsetLeft + duck.clientWidth >= document.body.clientWidth - 20) {
     return false;
   }
   return true;
@@ -165,7 +206,10 @@ function moveTopRight(duck, type, imageDuck) {
   duck.style.left = duck.offsetLeft + score + 'px';
   duck.style.top = duck.offsetTop - score + 'px';
 
-  if (duck.offsetLeft >= document.body.clientWidth - 20 || duck.offsetTop <= 10) {
+  if (
+    duck.offsetLeft + duck.clientWidth >= document.body.clientWidth - 20 ||
+    duck.offsetTop <= 10
+  ) {
     return false;
   }
   return true;
@@ -187,7 +231,10 @@ function moveDownRight(duck, type, imageDuck) {
   duck.style.left = duck.offsetLeft + score + 'px';
   duck.style.top = duck.offsetTop + score + 'px';
 
-  if (duck.offsetLeft >= document.body.clientWidth - 20 || duck.offsetTop <= 10) {
+  if (
+    duck.offsetLeft + duck.clientWidth >= document.body.clientWidth - 20 ||
+    duck.offsetTop <= 10
+  ) {
     return false;
   }
   return true;
